@@ -27,6 +27,17 @@ static void print_splash(void)
 
 void main(void* dt, void* kernel, void* ramdisk)
 {
+	/* Early debug: write to framebuffer before anything else */
+	volatile unsigned int *fb = (volatile unsigned int *)0xfac00000;
+	int i;
+	/* Draw a 100-pixel red row at top-left of screen */
+	for (i = 0; i < 100; i++)
+		fb[i] = 0xFFFF0000;  /* ARGB: red */
+	/* Draw green pixel at (200,0) */
+	fb[200] = 0xFF00FF00;
+	/* Draw blue pixel at (400,0) */
+	fb[400] = 0xFF0000FF;
+
 	early_console_init();
 	INITCALL(board_ops.ops.early_init);
 

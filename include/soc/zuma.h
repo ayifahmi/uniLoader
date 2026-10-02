@@ -40,18 +40,18 @@ void uart_putc(char ch)
 {
 	volatile uint32_t *uart_base = (volatile uint32_t *)ZUMA_UART_BASE;
 
-	if (readl(uart_base + (ZUMA_UART_UFCON / sizeof(*uart_base))) &
+	if ((*(uart_base + (ZUMA_UART_UFCON / sizeof(*uart_base)))) &
 	    ZUMA_UART_UFCON_FIFOMODE) {
-		while (readl(uart_base + (ZUMA_UART_UFSTAT / sizeof(*uart_base))) &
+		while ((*(uart_base + (ZUMA_UART_UFSTAT / sizeof(*uart_base)))) &
 		       ZUMA_UART_UFSTAT_TXFULL)
 			;
 	} else {
-		while (!(readl(uart_base + (ZUMA_UART_UTRSTAT / sizeof(*uart_base))) &
+		while (!((*(uart_base + (ZUMA_UART_UTRSTAT / sizeof(*uart_base)))) &
 			 ZUMA_UART_UTRSTAT_TXFE))
 			;
 	}
 
-	writel((unsigned int)ch, (void *)(ZUMA_UART_BASE + ZUMA_UART_UTXH));
+	*(volatile uint32_t *)(ZUMA_UART_BASE + ZUMA_UART_UTXH) = (unsigned int)ch;
 }
 
 void uart_puts(const char *s)
